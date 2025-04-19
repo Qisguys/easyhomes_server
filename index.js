@@ -11,12 +11,10 @@ const commitRoute = require('./routes/commitRoute');
 const app = express();
 
 // Middleware
-app.use(
-  cors({
-    origin: "easyhomes.vercel.app",
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: "https://easyhomes7.vercel.app",
+  credentials: true,
+}));
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
