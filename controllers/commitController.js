@@ -183,9 +183,9 @@ const cancelCommit = async (req, res) => {
 const getAllCommits = async (req, res) => {
   try {
     const commits = await Commit.find()
-      .populate('userId', 'firstname lastname email')  
-      .populate('renterId', 'firstname lastname email mobile')
-      .populate('homeId', 'title street town state rentprice images pluscode pincode district name mobile ');   
+      .populate('userId', 'firstname lastname email')
+      .populate('renterId', '_id firstname lastname email mobile') // Add _id explicitly
+      .populate('homeId', 'title street town state rentprice images pluscode pincode district name mobile');
 
     res.status(200).json(commits);
   } catch (error) {
@@ -193,6 +193,7 @@ const getAllCommits = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
 
 // In your commitController.js (Backend)
 
@@ -268,23 +269,52 @@ const accept_renter = async (req, res) => {
   }
 };
 
-
 const user_homes = async (req, res) => {
   try {
     const userId = req.params.userId;
 
-    // Find all accepted commits for the given userId
+    // Fetch accepted commits and populate home data
     const acceptedCommits = await Commit.find({
       userId,
       status: "Accepted",
-    }).populate("homeId"); // Populate home details from homeId field
+    }).populate(
+      "homeId",
+      "title name mobile street town district pincode rentprice images"
+    );
 
-    if (acceptedCommits.length === 0) {
+    if (!acceptedCommits || acceptedCommits.length === 0) {
       return res.status(404).json({ message: "No accepted homes found." });
     }
 
-    // Return all homes related to the accepted commits
-    const homes = acceptedCommits.map((commit) => commit.homeId);
+    const homes = acceptedCommits.map((commit) => {
+      const home = commit.homeId.toObject();
+
+      const formattedImages = (home.images || []).map((img) => {
+        let bufferData = null;
+
+        // Handle multiple possible formats
+        if (img?.data?.buffer) {
+          // Case: BSON Binary or Buffer object with buffer property
+          bufferData = img.data.buffer;
+        } else if (Buffer.isBuffer(img?.data)) {
+          // Case: Regular Node.js Buffer
+          bufferData = img.data;
+        } else if (Array.isArray(img?.data?.data)) {
+          // Case: { data: { type: 'Buffer', data: [bytes] } }
+          bufferData = Buffer.from(img.data.data);
+        }
+
+        return {
+          contentType: img.contentType || null,
+          base64: bufferData ? bufferData.toString("base64") : null,
+        };
+      });
+
+      return {
+        ...home,
+        images: formattedImages,
+      };
+    });
 
     res.status(200).json({ homes });
   } catch (error) {
