@@ -279,7 +279,7 @@ const user_homes = async (req, res) => {
       status: "Accepted",
     }).populate(
       "homeId",
-      "title name mobile street town district pincode rentprice images"
+      "title name mobile street town district pincode rentprice images pluscode"
     );
 
     if (!acceptedCommits || acceptedCommits.length === 0) {
