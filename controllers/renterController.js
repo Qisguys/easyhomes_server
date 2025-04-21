@@ -79,19 +79,46 @@ const loginRenter = async (req, res) => {
 const getRenterData = async (req, res) => {
   try {
     const renterId = req.params.id;
+    console.log("Fetching renter with ID:", renterId);
 
-    const renter = await Renter.findById(renterId)
+    let renter = await Renter.findById(renterId)
       .populate("homes")
       .populate({
         path: "commits",
         populate: {
-          path: "userId", // Assuming this is the user field in the commit schema
-          select: "name email", // Add any fields you want to show
+          path: "userId",
+          select: "name email",
         },
       });
 
     if (!renter) {
       return res.status(404).json({ message: "Renter not found!" });
+    }
+
+    // Log before base64 conversion
+    console.log("Fetched renter:", renter);
+
+    // Convert to plain object
+    renter = renter.toObject();
+
+    if (renter.homes && renter.homes.length > 0) {
+      renter.homes = renter.homes.map((home) => {
+        if (home.images && home.images.length > 0) {
+          home.images = home.images.map((img) => {
+            // Safe check for img.data
+            if (!img.data || !img.data.data) {
+              console.error("Image data is missing:", img);
+              return img;
+            }
+
+            return {
+              ...img,
+              base64: Buffer.from(img.data.data).toString("base64"),
+            };
+          });
+        }
+        return home;
+      });
     }
 
     res.status(200).json({ renter });
