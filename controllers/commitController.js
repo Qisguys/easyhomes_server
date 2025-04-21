@@ -37,18 +37,18 @@ const sendCommitEmail = async (commit, renter) => {
       Home: ${commit?.homeId?.title || ''}<br>
  
      <img 
-    src="http://localhost:5000/${screenshotUrl}" 
+    src="https://easyhomes.onrender.com/${screenshotUrl}" 
     alt="Screenshot" 
     style="max-width: 300px; height: auto; border-radius: 8px;" 
   /><br><br>
 
-  <a href="http://localhost:5000/${screenshotUrl}">View Screenshot</a><br><br>
-  <a href="http://localhost:3000/commit/${commit._id}">View Commit</a><br><br>
+  <a href="https://easyhomes.onrender.com/${screenshotUrl}">View Screenshot</a><br><br>
+  <a href="https://easyhomes.onrender.com/commit/${commit._id}">View Commit</a><br><br>
 
   To accept or cancel the commit, click the appropriate button:<br><br>
           To accept or cancel the commit, click the appropriate button:<br><br>+
-          <button style="background-color: green; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer;" onclick="window.location.href='http://localhost:3000/accept-commit/${commit._id}'">Accept Commit</button><br><br> +
-          <button style="background-color: red; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer;" onclick="window.location.href='http://localhost:3000/cancel-commit/${commit._id}'">Cancel Commit</button><br><br> +
+          <button style="background-color: green; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer;" onclick="window.location.href='https://easyhomes.onrender.com/accept-commit/${commit._id}'">Accept Commit</button><br><br> +
+          <button style="background-color: red; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer;" onclick="window.location.href='https://easyhomes.onrender.com/cancel-commit/${commit._id}'">Cancel Commit</button><br><br> +
           Best regards,<br>Easy Homes Team`
   };
 
